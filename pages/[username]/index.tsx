@@ -7,7 +7,7 @@ export async function getServerSideProps({ query }) {
 
   const userDoc = await getUserWithUsername(username);
 
-    if(!userDoc) {
+    if (!userDoc) {
         return {
             notFound: true,
         };
@@ -36,8 +36,7 @@ export default function UserProfilePage({ user, posts }) {
   return (
     <main>
       <UserProfile user={user} />
-      <PostFeed posts={posts} admin={undefined} />
+      <PostFeed posts={posts} admin={false} />
     </main>
   );
 }
-

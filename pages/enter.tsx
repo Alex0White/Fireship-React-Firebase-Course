@@ -4,7 +4,7 @@ import { UserContext } from '../lib/context';
 import debounce from 'lodash.debounce';
 
 export default function Enter(props) {
-  const { user, username } = useContext(UserContext)
+  const { user, username } = useContext(UserContext);
   // 1. user signed out <SignInButton />
   // 2. user signed in, but missing username <UsernameForm />
   // 3. user signed in, has username <SignOutButton />
@@ -22,9 +22,11 @@ function SignInButton() {
   };
 
   return (
+    <>
     <button className="btn-google" onClick={signInWithGoogle}>
       <img src={'/google.png'} width="30px" /> Sign in with Google
     </button>
+</>
   );
 }
 
@@ -131,4 +133,3 @@ function UsernameMessage({ username, isValid, loading }) {
     return <p></p>;
   }
 }
-
