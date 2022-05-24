@@ -1,38 +1,13 @@
 // Import the functions you need from the SDKs you need
-
-import { initializeApp, getApps } from "firebase/app";
-
-import { getAnalytics } from "firebase/analytics";
-
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signOut,
-} from "firebase/auth";
-
-import { getStorage } from "firebase/storage";
-
-import {
-  getFirestore,
-  collection,
-  onSnapshot,
-  query,
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import firebase from 'firebase/compat/app'
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
+import 'firebase/compat/storage';
 
 
-// TODO: Add SDKs for Firebase products that you want to use
+export const fromMillis = firebase.firestore.Timestamp.fromMillis;
 
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
 const firebaseConfig = {
   apiKey: "AIzaSyAOUZ-ERkOltSC8_9vCyMElBeMHrkwef0Q",
@@ -44,30 +19,41 @@ const firebaseConfig = {
   measurementId: "G-Q7792BH0LP",
 };
 
-let app;
-// Initialize Firebase
-if (getApps().length < 1) {
-  app = initializeApp(firebaseConfig);
-  console.log('app was created ' + app)
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig)
 }
 
-const analytics = getAnalytics(app);
+/**`
+ * Gets a users/{uid} document with username
+ * @param  {string} username
+ */
+ export async function getUserWithUsername(username) {
+  const usersRef = firestore.collection('users');
+  const query = usersRef.where('username', '==', username).limit(1);
+  const userDoc = (await query.get()).docs[0];
+  return userDoc;
+}
 
-const googleAuthProvider = new GoogleAuthProvider();
+/**`
+ * Converts a firestore document to JSON
+ * @param  {DocumentSnapshot} doc
+ */
+export function postToJSON(doc) {
+  const data = doc.data();
+  return {
+    ...data,
+    // Gotcha! firestore timestamp NOT serializable to JSON. Must convert to milliseconds
+    createdAt: data.createdAt.toMillis(),
+    updatedAt: data.updatedAt.toMillis(),
+  };
+}
 
-export {
-  app,
-  getAuth,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  googleAuthProvider,
-  signInWithPopup,
-  signOut,
-  collection,
-  getFirestore,
-  onSnapshot,
-  query,
-  doc,
-  getDoc,
-};
+
+export const auth = firebase.auth();
+export const firestore = firebase.firestore();
+export const storage = firebase.storage();
+export const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+export const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp;
+
+export const STATE_CHANGED = firebase.storage.TaskEvent.STATE_CHANGED;
+export const increment = firebase.firestore.FieldValue.increment;
