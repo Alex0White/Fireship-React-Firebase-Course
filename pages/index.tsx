@@ -7,9 +7,9 @@ import { useState } from 'react';
 
 // Max post to query per page
 const LIMIT = 10;
-console.log("just before getServerSideProbs gets called")
+
 export async function getServerSideProps() {
-  console.log("getServerSideProps starts working here")
+
   
   const postsQuery = firestore
     .collectionGroup('posts')
@@ -18,7 +18,7 @@ export async function getServerSideProps() {
     .limit(LIMIT);
 
   const posts = (await postsQuery.get()).docs.map(postToJSON);
-  console.log(posts)
+  
   return {
     props: { posts }, // will be passed to the page component as props
   };
