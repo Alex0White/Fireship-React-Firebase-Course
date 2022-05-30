@@ -1,5 +1,5 @@
-import { firestore, auth, increment } from "../lib/firebase";
-import { useDocument } from "react-firebase-hooks/firestore";
+import { firestore, auth, increment } from '@lib/firebase';
+import { useDocument } from 'react-firebase-hooks/firestore';
 //import { doc, getFirestore, writeBatch } from "firebase/firestore";
 
 export default function Heart({ postRef }: any) {

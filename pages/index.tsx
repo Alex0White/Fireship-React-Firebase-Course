@@ -1,8 +1,9 @@
-import PostFeed from "../components/PostFeed";
-import Loader from "../components/Loader";
-import { firestore, fromMillis, postToJSON } from "../lib/firebase";
+import PostFeed from '@components/PostFeed';
+import Metatags from '@components/Metatags';
+import Loader from '@components/Loader';
+import { firestore, fromMillis, postToJSON } from '@lib/firebase';
 
-import { useState } from "react";
+import { useState } from 'react';
 
 // Max post to query per page
 const LIMIT = 10;
