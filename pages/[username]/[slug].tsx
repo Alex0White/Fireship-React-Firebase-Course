@@ -9,7 +9,7 @@ import { firestore, getUserWithUsername, postToJSON } from "../../lib/firebase";
 import Link from "next/link";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { useContext } from "react";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
+//import { doc, getDoc, getFirestore } from "firebase/firestore";
 
 export async function getStaticProps({params}: { params: any}) {
   const { username, slug } = params;
