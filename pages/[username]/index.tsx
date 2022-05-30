@@ -4,6 +4,7 @@ import PostFeed from '../../components/PostFeed';
 import { GetServerSideProps } from 'next';
 
 export async function getServerSideProps({ query }) {
+  
   const { username } = query;
 
   const userDoc = await getUserWithUsername(username);
