@@ -1,11 +1,15 @@
 // Import the functions you need from the SDKs you need
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import 'firebase/compat/firestore';
-import 'firebase/compat/storage';
+// import firebase from 'firebase/compat/app';
+// import 'firebase/compat/auth';
+// import 'firebase/compat/firestore';
+// import 'firebase/compat/storage';
+import { initializeApp, getApp } from "firebase/app"
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import {  getFirestore, collection, where, getDocs, query, limit  } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 
-export const fromMillis = firebase.firestore.Timestamp.fromMillis;
+//export const fromMillis = firebase.firestore.Timestamp.fromMillis;
 
 
 
@@ -19,18 +23,50 @@ const firebaseConfig = {
   measurementId: "G-Q7792BH0LP",
 };
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig)
+function createFirebaseApp(config) {
+  try {
+    return getApp();
+  } catch {
+    return initializeApp(config);
+  }
 }
+
+const firebaseApp = createFirebaseApp(firebaseConfig );
+// if (!firebase.apps.length) {
+//   firebase.initializeApp(firebaseConfig)
+  
+
+// }
+
+export const auth = getAuth(firebaseApp);
+export const googleAuthProvider = new GoogleAuthProvider();
 
 /**`
  * Gets a users/{uid} document with username
- * @param  {string} username
+ * // @\param  {string} username
  */
- export async function getUserWithUsername(username) {
-  const usersRef = firestore.collection('users');
-  const query = usersRef.where('username', '==', username).limit(1);
-  const userDoc = (await query.get()).docs[0];
+ //export async function getUserWithUsername(username) {
+  //const usersRef = firestore.collection('users');
+  //const query = usersRef.where('username', '==', username).limit(1);
+export const firestore = getFirestore(firebaseApp)
+
+export const storage = getStorage(firebaseApp);
+export const STATE_CHANGED = 'state_changed';
+
+/**
+ * Gets a users/{uid} document with username
+ * @\param {string } username
+ */
+let username: string
+
+
+export async function getUserWithUsername(username: string) {
+  const q = query(
+    collection(firestore, 'users'),
+    where('username', '==', username),
+    limit(1)
+  )
+  const userDoc = (await getDocs(q)).docs[0];
   return userDoc;
 }
 
@@ -43,17 +79,17 @@ export function postToJSON(doc) {
   return {
     ...data,
     // Gotcha! firestore timestamp NOT serializable to JSON. Must convert to milliseconds
-    createdAt: data.createdAt.toMillis(),
-    updatedAt: data.updatedAt.toMillis(),
+    createdAt: data?.createdAt.toMillis() || 0,
+    updatedAt: data?.updatedAt.toMillis() || 0,
   };
 }
 
+// export const auth = getAuth(app);
 
-export const auth = firebase.auth();
-export const firestore = firebase.firestore();
-export const storage = firebase.storage();
-export const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
-export const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp;
-
-export const STATE_CHANGED = firebase.storage.TaskEvent.STATE_CHANGED;
-export const increment = firebase.firestore.FieldValue.increment;
+// export const auth = firebase.auth();
+// export const firestore = firebase.firestore();
+// export const storage = firebase.storage();
+// export const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+// export const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp;
+// export const STATE_CHANGED = firebase.storage.TaskEvent.STATE_CHANGED;
+// export const increment = firebase.firestore.FieldValue.increment;
