@@ -5,23 +5,33 @@ import AuthCheck from "../../components/AuthCheck";
 import Metatags from "../../components/Metatags";
 import { UserContext } from "../../lib/context";
 import { firestore, getUserWithUsername, postToJSON } from "../../lib/firebase";
+import {
+  doc,
+  getDocs,
+  getDoc,
+  collectionGroup,
+  query,
+  limit,
+  getFirestore,
+} from "firebase/firestore";
 
 import Link from "next/link";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { useContext } from "react";
 //import { doc, getDoc, getFirestore } from "firebase/firestore";
 
-export async function getStaticProps({params}: { params: any}) {
+export async function getStaticProps({ params }: { params: any }) {
   const { username, slug } = params;
   const userDoc = await getUserWithUsername(username);
 
   let post;
   let path;
 
-  if(userDoc) {
-    const postRef = userDoc.ref.collection('posts').doc(slug);
+  if (userDoc) {
+    const postRef = doc(getFirestore(), userDoc.ref.path, slug); //userDoc.ref.collection('posts').doc(slug);
+
     //const postRef = doc(getFirestore(), userDoc.ref.path, 'posts', slug);
-    post = postToJSON(await postRef.get());
+    post = postToJSON(await getDoc(postRef));
     //post = postToJSON(await getDoc(postRef));
     path = postRef.path;
   }
@@ -33,28 +43,41 @@ export async function getStaticProps({params}: { params: any}) {
 }
 
 export async function getStaticPaths() {
-  const snapshot = await firestore.collectionGroup('posts').get();
+  // const q = query(
+  //   collectionGroup(getFirestore(), 'posts'),
+  //   limit(20)
+  // )
 
-  const paths = snapshot.docs.map((doc) => {
+  const snapshot = await collectionGroup(getFirestore(), "posts");
+
+  let paths = await getDocs(snapshot);
+  paths.forEach((doc) => {
     const { slug, username } = doc.data();
     return {
       params: { username, slug },
     };
   });
- 
+
+  // const paths = snapshot.docs.map((doc) => {
+
+  //   const { slug, username } = doc.data();
+  //   return {
+  //     params: { username, slug },
+  //   };
+  // });
+
   return {
     // must be in this format:
     // paths: [
     //   { params: { username, slug }}
     // ],
     paths,
-    fallback: 'blocking',
-
+    fallback: "blocking",
   };
 }
 
 export default function Post(props: any) {
-  const postRef: any = firestore.doc(props.path);
+  const postRef: any = doc(getFirestore(), props.path);
   //const postRef = doc(getFirestore(), props.path);
   const [realtimePost] = useDocumentData(postRef);
 
@@ -90,7 +113,6 @@ export default function Post(props: any) {
             <button className="btn-blue">Edit Post</button>
           </Link>
         )}
-        
       </aside>
     </main>
   );
